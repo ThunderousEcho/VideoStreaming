@@ -11,18 +11,19 @@ using UnityEngine;
 public class VideoStreamSource : MonoBehaviour {
 
     private Camera cam;
+    private AudioStreamSource audioStreamSource;
 
     public string pathToFfmpegDotExe = "ffmpeg.exe";
 
-    public int port = 44962;
-    private TcpListener listenerForFfmpeg;
-    private TcpClient ffmpegTcpClient;
-    private NetworkStream ffmpegStream;
+    const int port = 44962;
+    private Socket ffmpegListenSock;
+    private Socket ffmpegSock;
     private Process ffmpegProcess;
+    IPEndPoint endpoint = new IPEndPoint(IPAddress.Parse("127.0.0.1"), port);
 
-    private int outputWidth = 160;
-    private int outputHeight = 90;
-    const int numBufferedFrames = 256;
+    private int outputWidth = -1;
+    private int outputHeight = -1;
+    private int outputFramerate = -1;
 
     private RenderTexture superIntermediateTexture;
     private Texture2D intermediateTexture;
@@ -30,47 +31,71 @@ public class VideoStreamSource : MonoBehaviour {
     [HideInInspector]
     public string key;
 
-    bool tcpWriting = false;
+    float lastFrameTime;
 
-    List<byte> internalBuffer = new List<byte>();
-
-    public void SetOutputResolution(int width, int height) {
-        if (listenerForFfmpeg != null) { //if start has not jet been called
-            outputWidth = width;
-            outputHeight = height;
+    public void SetOutputFramerate(int framerate) {
+        if (ffmpegProcess != null) { //if OnEnable has not yet been called
+            outputFramerate = framerate;
         } else {
-            UnityEngine.Debug.LogError("The resolution to be sent to Youtube Gaming cannot be changed after Start() is called on this object.");
+            UnityEngine.Debug.LogError("The output framerate cannot be changed while running.");
         }
     }
 
-    public void SetOutputResolution(int p) { //e.g. 480p or 720p
+    public void SetOutputResolution(int width, int height) {
+        if (ffmpegProcess != null) { //if OnEnable has not yet been called
+            outputWidth = width;
+            outputHeight = height;
+        } else {
+            UnityEngine.Debug.LogError("The output resolution cannot be changed while running.");
+        }
+    }
+
+    public void SetOutputResolution(int p) { //e.g. 480p, 720p, 1080p
         SetOutputResolution((p * 16) / 9, p);
     }
 
-    void Start() {
+    public void AutoOutputResolution() {
+        SetOutputResolution(Screen.width, Screen.height);
+    }
+
+    void OnEnable() {
+
+        audioStreamSource = GetComponent<AudioStreamSource>();
+        audioStreamSource.enabled = true;
+
+        if (outputWidth <= 0)
+            outputWidth = Screen.width;
+        if (outputHeight <= 0)
+            outputHeight = Screen.height;
+        if (outputFramerate <= 0)
+            outputFramerate = 30;
+
         cam = GetComponent<Camera>();
 
-        listenerForFfmpeg = new TcpListener(IPAddress.Parse("127.0.0.1"), port);
-        listenerForFfmpeg.Start();
+        ffmpegListenSock = new Socket(AddressFamily.InterNetwork, SocketType.Stream, ProtocolType.Tcp);
+        ffmpegListenSock.SendBufferSize = int.MaxValue;
+        ffmpegListenSock.NoDelay = true;
+        ffmpegListenSock.Bind(endpoint);
+        ffmpegListenSock.Listen(1);
+        ffmpegListenSock.BeginAccept(EndSocketAccept, ffmpegListenSock);
 
         ffmpegProcess = new Process();
         ffmpegProcess.StartInfo.FileName = pathToFfmpegDotExe;
         ffmpegProcess.StartInfo.UseShellExecute = false;
         ffmpegProcess.StartInfo.CreateNoWindow = false;
-        ffmpegProcess.StartInfo.Arguments = string.Format("-re -f rawvideo -pix_fmt rgb24 -s {0}x{1} -i tcp://127.0.0.1:{2}?timeout=1000000 -i in.ogg -vf vflip -c:v libx264 -preset ultrafast -maxrate 3000k -bufsize 6000k -pix_fmt yuv420p -g 50 -c:a aac -b:a 160k -ac 2 -ar 44100 -f flv rtmp://a.rtmp.youtube.com/live2/9qr1-vfkp-631c-76tu", outputWidth, outputHeight, port);
+
+        ffmpegProcess.StartInfo.Arguments = string.Format(
+            "-framerate {2} -f rawvideo -pix_fmt rgb24 -s {0}x{1} -i tcp://127.0.0.1:{4} " + 
+            "-ar {3} -ac 2 -f f32le -i tcp://127.0.0.1:{5} " +
+            "-vf vflip -c:v libx264 -preset ultrafast -maxrate 3000k -bufsize 6000k -pix_fmt yuv420p -g 50 -c:a aac -b:a 160k -ac 2 -ar 44100 -f flv rtmp://a.rtmp.youtube.com/live2/9qr1-vfkp-631c-76tu",
+            outputWidth, outputHeight, outputFramerate, AudioSettings.outputSampleRate, port, AudioStreamSource.port
+        );
+
         ffmpegProcess.Start();
 
-        intermediateTexture = new Texture2D(outputWidth, outputHeight, TextureFormat.RGB24, false);
-        superIntermediateTexture = new RenderTexture(outputWidth, outputHeight, 0);
-    }
-
-    void Update() {
-        if (listenerForFfmpeg != null && listenerForFfmpeg.Pending() && ffmpegTcpClient == null) {
-            ffmpegTcpClient = listenerForFfmpeg.AcceptTcpClient();
-            ffmpegTcpClient.SendBufferSize = outputWidth * outputHeight * 3 * numBufferedFrames;
-            ffmpegStream = ffmpegTcpClient.GetStream();
-            listenerForFfmpeg.Stop();
-            listenerForFfmpeg = null;
+        if (intermediateTexture == null) {
+            intermediateTexture = new Texture2D(outputWidth, outputHeight, TextureFormat.RGB24, false);
+            superIntermediateTexture = new RenderTexture(outputWidth, outputHeight, 0);
         }
     }
 
@@ -78,8 +103,15 @@ public class VideoStreamSource : MonoBehaviour {
 
         Graphics.Blit(source, destination);
 
-        if (ffmpegTcpClient == null)
+        if (ffmpegSock == null) {
+            lastFrameTime = Time.realtimeSinceStartup;
             return;
+        }
+
+        if (Time.realtimeSinceStartup - lastFrameTime < 1f / outputFramerate)
+            return;
+
+        lastFrameTime += 1f / outputFramerate;
 
         Graphics.Blit(source, superIntermediateTexture);
 
@@ -89,37 +121,33 @@ public class VideoStreamSource : MonoBehaviour {
         RenderTexture.active = null;
 
         byte[] frame = intermediateTexture.GetRawTextureData();
-        internalBuffer.AddRange(frame);
 
-        if (internalBuffer.Count > outputHeight * outputWidth * 3 * 60) {
-            if (!tcpWriting) {
-                UnityEngine.Debug.Log("Dumping buffer at time " + Time.time);
-                tcpWriting = true;
-                try {
-                    ffmpegStream.BeginWrite(internalBuffer.ToArray(), 0, internalBuffer.Count, EndTcpWrite, ffmpegStream);
-                } catch (Exception e) {
-                    UnityEngine.Debug.LogError("The TCP stream to the encoder threw an error: " + e.Message);
-                }
-                internalBuffer.Clear();
-            } else {
-                //UnityEngine.Debug.Log("Delays " + Time.time);
-            }
+        try {
+            ffmpegSock.BeginSend(frame, 0, frame.Length, SocketFlags.None, EndTcpWrite, ffmpegSock);
+        } catch (Exception e) {
+            UnityEngine.Debug.LogError("The TCP socket to the encoder threw an error: " + e.Message);
         }
     }
 
-    void EndTcpWrite(IAsyncResult asynchResult) {
-        UnityEngine.Debug.Log("End");
-        //((NetworkStream)asynchResult).Flush();
-        tcpWriting = false;
-        UnityEngine.Debug.Log("Done");
+    void EndTcpWrite(IAsyncResult asynchResult) { }
+
+    void EndSocketAccept(IAsyncResult asynchResult) {
+        ffmpegSock = ffmpegListenSock.EndAccept(asynchResult);
+        ffmpegListenSock.Close();
+        ffmpegListenSock = null;
     }
 
-    private void OnDestroy() {
-        if (ffmpegTcpClient != null)
-            ffmpegTcpClient.Close();
-        if (listenerForFfmpeg != null)
-            listenerForFfmpeg.Stop();
+    void OnDisable() {
+
+        audioStreamSource.enabled = false;
+
         if (ffmpegProcess != null && !ffmpegProcess.HasExited)
             ffmpegProcess.Kill();
+        if (ffmpegSock != null)
+            ffmpegSock.Close();
+        ffmpegSock = null;
+        if (ffmpegListenSock != null)
+            ffmpegListenSock.Close();
+        ffmpegListenSock = null;
     }
 }
