@@ -1,0 +1,85 @@
+Signature-Version: 1.0
+SHA1-Digest-Manifest: t/o8Qn5ua6HFwK0OpVbWSIiKCUQ=
+Created-By: 1.0 (Android)
+
+Name: assets/bin/Data/Managed/System.Core.dll
+SHA1-Digest: YmkIAXKCSETyM2l/brmd5SOsyLM=
+
+Name: AndroidManifest.xml
+SHA1-Digest: VVZD7wFjeUH4CI/kRapqLD2jYrE=
+
+Name: assets/bin/Data/Managed/UnityEngine.UI.dll
+SHA1-Digest: 6xlNv6D290VA4kwGgABajOTkaVs=
+
+Name: assets/bin/Data/sharedassets0.assets
+SHA1-Digest: gzTat5MRsetNPMacgSLdkA5X7AI=
+
+Name: lib/armeabi-v7a/libunity.so
+SHA1-Digest: LEnPd9vtS1b+DeWtd7M52fDznuc=
+
+Name: assets/bin/Data/Resources/unity_builtin_extra
+SHA1-Digest: krWf8klLCYsDFsFg1469zCw2/V0=
+
+Name: assets/bin/Data/globalgamemanagers
+SHA1-Digest: zw4fcbG0r/7g2pTN3MX1yYQRVhY=
+
+Name: assets/bin/Data/sharedassets0.resource
+SHA1-Digest: jJqEQLRSFX7/d1tn6gfxNVKOZ+k=
+
+Name: lib/armeabi-v7a/libmain.so
+SHA1-Digest: Sf/2Uh1x/zHnZJ7gp6xWFZPfJHU=
+
+Name: assets/bin/Data/Managed/UnityEngine.Networking.dll
+SHA1-Digest: rtfFm+7G03zLlhJ/8RxRqOkHHPk=
+
+Name: lib/x86/libunity.so
+SHA1-Digest: i2QyzwWYHQtqS8+5a5ZW55obMXY=
+
+Name: assets/bin/Data/Managed/UnityEngine.dll
+SHA1-Digest: xss4BH50EWhVeS4FRaoPWz6A3Lo=
+
+Name: lib/armeabi-v7a/libmono.so
+SHA1-Digest: OUNTsPOqzP0e4cc2kmXU018LnQc=
+
+Name: assets/bin/Data/level0
+SHA1-Digest: fKR6e2H/QSpKlqCFuzBiVijm9/M=
+
+Name: assets/bin/Data/settings.xml
+SHA1-Digest: qfSAiMXIjq+uYlj++onN31q44FI=
+
+Name: res/drawable-mdpi-v4/app_icon.png
+SHA1-Digest: HhO14ew8jXhvF+epB9JARufI/D4=
+
+Name: res/drawable-xhdpi-v4/app_banner.png
+SHA1-Digest: GmAqfy00mkN6GabsZhcK6EHDtzI=
+
+Name: assets/bin/Data/Managed/Mono.Security.dll
+SHA1-Digest: wjEJuR7KSCZPDmrmlrDQ/Q4IIbA=
+
+Name: assets/bin/Data/unity default resources
+SHA1-Digest: jnAke60gXuvc8ccJ0tHpHsxjMfU=
+
+Name: assets/bin/Data/globalgamemanagers.assets
+SHA1-Digest: r5TrR6xhq9Ls2VvN8FbtVo4AJCw=
+
+Name: assets/bin/Data/Managed/Assembly-CSharp.dll
+SHA1-Digest: FKQz4d+YThUzQsW5PCHpG8jlMUQ=
+
+Name: assets/bin/Data/Managed/System.dll
+SHA1-Digest: C4iumVdWU/WSWllJgGCmByD6OJA=
+
+Name: resources.arsc
+SHA1-Digest: secqUswkWfUKZOgV09UNuzg0CaU=
+
+Name: assets/bin/Data/Managed/mscorlib.dll
+SHA1-Digest: cdGwHhQHBpHtnDiC4RulC7fll0M=
+
+Name: lib/x86/libmono.so
+SHA1-Digest: gbyWvRJwzwU1ese+DCdpXpcl+L0=
+
+Name: lib/x86/libmain.so
+SHA1-Digest: Lg2UgcS6KILGAV4BQApzX6CuwMg=
+
+Name: classes.dex
+SHA1-Digest: aiM38jW1y5CrNudft9e8gkhb76k=
+

@@ -1,0 +1,22 @@
+fileFormatVersion: 2
+guid: 94a347df7870df340b5e3f82f15f741b
+timeCreated: 1503450166
+licenseType: Free
+TrueTypeFontImporter:
+  serializedVersion: 4
+  fontSize: 16
+  forceTextureCase: -2
+  characterSpacing: 0
+  characterPadding: 1
+  includeFontData: 1
+  fontName: Inconsolata
+  fontNames:
+  - Inconsolata
+  fallbackFontReferences:
+  - {fileID: 12800000, guid: 7d75310667cdaec47917f51a30cac8d3, type: 3}
+  customCharacters: 
+  fontRenderingMode: 0
+  ascentCalculationMode: 1
+  userData: 
+  assetBundleName: 
+  assetBundleVariant: 

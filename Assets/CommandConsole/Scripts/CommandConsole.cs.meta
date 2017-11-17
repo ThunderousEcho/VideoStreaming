@@ -1,0 +1,31 @@
+fileFormatVersion: 2
+guid: 86a4b0cce12ae2245babb5484ff73e62
+timeCreated: 1503599353
+licenseType: Free
+MonoImporter:
+  serializedVersion: 2
+  defaultReferences:
+  - so: {instanceID: 0}
+  - inputField: {instanceID: 0}
+  - outputField: {instanceID: 0}
+  - inputFieldExpansionText: {instanceID: 0}
+  - outputFieldExpansionText: {instanceID: 0}
+  - showEnclosingCode: {instanceID: 0}
+  - enterCompiles: {instanceID: 0}
+  - selectedObjectText: {instanceID: 0}
+  - toolTipExpansionText: {instanceID: 0}
+  - toolTipText: {instanceID: 0}
+  - console: {instanceID: 0}
+  - hotkeyButtonPanel: {instanceID: 0}
+  - hotkeyButtonPrefab: {fileID: 1717073305058400, guid: 3d705bbc8d8f4f5418ce1e35241c8f94,
+      type: 2}
+  - buttonSprite: {fileID: 21300000, guid: 4b96fd818ed952e4da426bf47d26be9b, type: 3}
+  - buttonPressedSprite: {fileID: 21300000, guid: ecd14a2f8d436874c91a45ec29034a99,
+      type: 3}
+  - buttonDisabledSprite: {fileID: 21300000, guid: 6700d3b577d3ec44f95f03786746020f,
+      type: 3}
+  executionOrder: 0
+  icon: {instanceID: 0}
+  userData: 
+  assetBundleName: 
+  assetBundleVariant: 
