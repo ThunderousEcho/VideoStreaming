@@ -38,21 +38,6 @@ public class ReplayKitHelper : MonoBehaviour {
         }
 #endif
     }
-
-    void Update() {
-#if UNITY_IOS
-        button.interactable = ReplayKit.APIAvailable;
-        if (!button.interactable)
-            text.text = "ReplayKit unavailable.";
-        else{
-            if (ReplayKit.isBroadcasting && !text.text.Equals("Start broadcasting")) {
-                text.text = "Start broadcasting";
-            } else if (!ReplayKit.isBroadcasting && !text.text.Equals("Stop broadcasting")) {
-                text.text = "Stop broadcasting";
-            }
-        }
-#endif
-    }
 }
 
 
